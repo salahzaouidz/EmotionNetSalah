@@ -1,0 +1,1302 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotion AI Pro | Multi-Face Detection | Salah Zaoui</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #06060e;
+            --bg-card: #0e0e1a;
+            --bg-card2: #131325;
+            --border: #1e1e35;
+            --text: #e4e4f0;
+            --text-secondary: #8888a5;
+            --accent: #7c3aed;
+            --accent2: #06b6d4;
+            --green: #10b981;
+            --red: #ef4444;
+            --yellow: #f59e0b;
+            --orange: #f97316;
+            --radius: 14px;
+            --radius-lg: 20px;
+            --shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            background-image:
+                radial-gradient(ellipse at 15% 15%, rgba(124, 58, 237, 0.06) 0%, transparent 55%),
+                radial-gradient(ellipse at 85% 75%, rgba(6, 182, 212, 0.06) 0%, transparent 55%);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 25px 20px 15px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(124, 58, 237, 0.12);
+            border: 1px solid rgba(124, 58, 237, 0.2);
+            border-radius: 50px;
+            padding: 7px 18px;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+
+        .badge .live-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--green);
+            animation: dotPulse 2s infinite;
+        }
+
+        @keyframes dotPulse {
+            0%, 100% { box-shadow: 0 0 6px var(--green); }
+            50% { box-shadow: 0 0 16px var(--green); }
+        }
+
+        .logo { font-size: 3.5rem; margin-bottom: 8px; }
+
+        .title {
+            font-size: 2.4rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #c4b5fd, #7c3aed, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle { color: var(--text-secondary); font-size: 0.95rem; margin-top: 5px; }
+
+        /* Tabs */
+        .tab-bar {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 11px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+            font-weight: 600;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .tab:hover {
+            border-color: var(--accent);
+            color: var(--text);
+            transform: translateY(-2px);
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, var(--accent), #6d28d9);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.35);
+        }
+
+        /* Model selector */
+        .model-bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 18px;
+            margin: 15px 0 20px;
+            flex-wrap: wrap;
+        }
+
+        .toggle-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 5px 5px 5px 14px;
+        }
+
+        .toggle-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+
+        .toggle-label.active { color: var(--accent); font-weight: 700; }
+
+        .toggle-sw {
+            width: 48px;
+            height: 26px;
+            background: var(--border);
+            border-radius: 13px;
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .toggle-sw.on { background: var(--accent); box-shadow: 0 0 15px rgba(124, 58, 237, 0.3); }
+
+        .toggle-sw::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #fff;
+            top: 3px;
+            left: 3px;
+            transition: var(--transition);
+        }
+
+        .toggle-sw.on::after { left: 25px; }
+
+        .info-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 12px 18px;
+        }
+
+        .info-card .model-emoji { font-size: 1.5rem; }
+
+        .info-card h4 { font-size: 0.9rem; font-weight: 600; }
+        .info-card span { font-size: 0.78rem; color: var(--text-secondary); }
+
+        .acc-tag {
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--green);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+
+        /* Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        @media (max-width: 1050px) {
+            .main-grid { grid-template-columns: 1fr; }
+            .title { font-size: 1.8rem; }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 22px;
+            box-shadow: var(--shadow);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-header .icon-circle {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .icon-upload { background: rgba(124, 58, 237, 0.12); color: var(--accent); }
+        .icon-results { background: rgba(6, 182, 212, 0.12); color: var(--accent2); }
+
+        .card-title { font-weight: 700; font-size: 1rem; letter-spacing: -0.3px; }
+
+        .card-badge {
+            margin-left: auto;
+            font-size: 0.72rem;
+            padding: 5px 12px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-secondary);
+        }
+
+        /* Upload zone */
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-lg);
+            padding: 45px 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: rgba(255, 255, 255, 0.008);
+        }
+
+        .upload-zone:hover {
+            border-color: var(--accent);
+            background: rgba(124, 58, 237, 0.02);
+            transform: translateY(-3px);
+        }
+
+        .upload-zone.drag-over {
+            border-color: var(--green) !important;
+            background: rgba(16, 185, 129, 0.04) !important;
+            transform: scale(1.01);
+        }
+
+        .upload-icon-large { font-size: 4.5rem; display: block; margin-bottom: 12px; }
+
+        .upload-text { font-size: 1rem; color: var(--text-secondary); }
+
+        .upload-text .link {
+            color: var(--accent);
+            font-weight: 600;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .upload-hint {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            opacity: 0.6;
+            margin-top: 8px;
+        }
+
+        /* File list */
+        .file-list {
+            margin-top: 12px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background: var(--bg-card2);
+            border-radius: 8px;
+            margin: 4px 0;
+            font-size: 0.82rem;
+        }
+
+        .file-item .remove-btn {
+            margin-left: auto;
+            cursor: pointer;
+            color: var(--red);
+            font-size: 1.1rem;
+        }
+
+        /* Crop overlay */
+        .image-preview-wrap {
+            position: relative;
+            border-radius: var(--radius);
+            overflow: hidden;
+            background: #000;
+            margin-top: 15px;
+        }
+
+        .image-preview-wrap img {
+            width: 100%;
+            display: block;
+            max-height: 350px;
+            object-fit: contain;
+        }
+
+        .crop-overlay {
+            position: absolute;
+            border: 2px dashed #00ff88;
+            cursor: move;
+            display: none;
+            z-index: 5;
+        }
+
+        .crop-overlay.active { display: block; }
+
+        .crop-handle {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #00ff88;
+            border: 2px solid #fff;
+            border-radius: 50%;
+        }
+
+        .crop-handle.nw { top: -6px; left: -6px; cursor: nwse-resize; }
+        .crop-handle.ne { top: -6px; right: -6px; cursor: nesw-resize; }
+        .crop-handle.sw { bottom: -6px; left: -6px; cursor: nesw-resize; }
+        .crop-handle.se { bottom: -6px; right: -6px; cursor: nwse-resize; }
+
+        /* Video container */
+        .video-container {
+            position: relative;
+            background: #000;
+            border-radius: var(--radius);
+            overflow: hidden;
+            aspect-ratio: 4/3;
+        }
+
+        .video-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .webcam-placeholder {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0a0a16, #12122a);
+            gap: 18px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 10px 22px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), #6d28d9);
+            color: #fff;
+            box-shadow: 0 5px 20px rgba(124, 58, 237, 0.25);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--green), #059669);
+            color: #fff;
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.25);
+        }
+
+        .btn-success:hover { transform: translateY(-2px); }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--red), #dc2626);
+            color: #fff;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent);
+            background: rgba(124, 58, 237, 0.06);
+        }
+
+        .btn-sm { padding: 7px 14px; font-size: 0.78rem; }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* Results */
+        .results-area { display: none; margin-top: 18px; }
+
+        .results-area.active { display: block; }
+
+        .emotion-display { text-align: center; padding: 15px; }
+
+        .big-emoji {
+            font-size: 4.5rem;
+            display: block;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0) rotate(-15deg); }
+            100% { transform: scale(1) rotate(0); }
+        }
+
+        .emotion-name {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin: 6px 0;
+            letter-spacing: -1px;
+        }
+
+        .confidence-text { font-size: 1rem; color: var(--text-secondary); }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            margin: 12px auto;
+            max-width: 300px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Prediction items */
+        .pred-list { margin-top: 10px; }
+
+        .pred-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 14px;
+            margin: 4px 0;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid transparent;
+            transition: var(--transition);
+            gap: 10px;
+        }
+
+        .pred-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: var(--border);
+            transform: translateX(2px);
+        }
+
+        .pred-emoji { font-size: 1.5rem; flex-shrink: 0; }
+
+        .pred-name { flex: 1; font-weight: 600; font-size: 0.85rem; }
+
+        .pred-bar-wrap {
+            flex: 2;
+            height: 20px;
+            background: var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .pred-bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+
+        .pred-pct {
+            font-weight: 700;
+            font-size: 0.85rem;
+            min-width: 45px;
+            text-align: right;
+        }
+
+        /* Multi-result gallery */
+        .results-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .gallery-item {
+            background: var(--bg-card2);
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+
+        .gallery-item:hover {
+            border-color: var(--accent);
+            transform: translateY(-3px);
+        }
+
+        .gallery-item.selected {
+            border-color: var(--accent2);
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+        }
+
+        .gallery-info {
+            padding: 8px 10px;
+        }
+
+        .gallery-info .emotion-label {
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .gallery-info .conf-label {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+        }
+
+        /* Status */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .status-detected {
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--green);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+        }
+
+        .status-missing {
+            background: rgba(239, 68, 68, 0.12);
+            color: var(--red);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+        }
+
+        .live-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--red);
+            animation: dotPulse 1.5s infinite;
+            display: inline-block;
+        }
+
+        .hidden { display: none !important; }
+
+        #fileInput { display: none; }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--bg-card2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 20px;
+            font-size: 0.85rem;
+            z-index: 1000;
+            animation: slideUp 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <div class="badge">
+            <span class="live-dot"></span>
+            Created by <strong>Salah Hacen Nasrallah Zaoui</strong>
+        </div>
+        <div class="logo">🧠</div>
+        <h1 class="title">Emotion AI Pro</h1>
+        <p class="subtitle">Multi-Face Detection • Manual Crop • Batch Processing</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-bar">
+        <button class="tab active" data-mode="image" onclick="switchMode('image')">
+            🖼️ Image Analysis
+        </button>
+        <button class="tab" data-mode="webcam" onclick="switchMode('webcam')">
+            📹 Live Camera
+        </button>
+    </div>
+
+    <!-- Model selector -->
+    <div class="model-bar">
+        <div class="toggle-wrap">
+            <span class="toggle-label active" id="lbl1">V1</span>
+            <div class="toggle-sw" id="modelToggle" onclick="toggleModel()"></div>
+            <span class="toggle-label" id="lbl2">V2</span>
+        </div>
+        <div class="info-card">
+            <span class="model-emoji">🤖</span>
+            <div>
+                <h4 id="mdlName">Loading...</h4>
+                <span id="mdlDesc"></span>
+            </div>
+            <span class="acc-tag" id="mdlAcc"></span>
+        </div>
+    </div>
+
+    <!-- Main grid -->
+    <div class="main-grid">
+        <!-- Left: Input -->
+        <div class="card">
+            <div class="card-header">
+                <div class="icon-circle icon-upload">📥</div>
+                <span class="card-title" id="inputTitle">Upload Images</span>
+                <span class="card-badge" id="inputBadge">Multi-file</span>
+            </div>
+
+            <!-- Image mode -->
+            <div id="imageMode">
+                <div class="upload-zone" id="uploadZone"
+                     onclick="document.getElementById('fileInput').click()"
+                     ondragover="event.preventDefault(); this.classList.add('drag-over')"
+                     ondragleave="this.classList.remove('drag-over')"
+                     ondrop="handleDrop(event)">
+                    <span class="upload-icon-large">📁</span>
+                    <p class="upload-text">Drop images or <span class="link">browse</span></p>
+                    <p class="upload-hint">PNG, JPG, WEBP • Multiple files supported</p>
+                    <input type="file" id="fileInput" accept="image/*" multiple onchange="handleFilesSelect(event)">
+                </div>
+
+                <div class="file-list" id="fileList"></div>
+
+                <!-- Image preview with crop -->
+                <div id="previewSection" class="hidden">
+                    <div class="image-preview-wrap" id="imagePreviewWrap">
+                        <img id="previewImg" src="" alt="Preview">
+                        <div class="crop-overlay" id="cropBox">
+                            <div class="crop-handle nw" data-dir="nw"></div>
+                            <div class="crop-handle ne" data-dir="ne"></div>
+                            <div class="crop-handle sw" data-dir="sw"></div>
+                            <div class="crop-handle se" data-dir="se"></div>
+                        </div>
+                    </div>
+
+                    <div class="btn-group" style="margin-top:8px;">
+                        <button class="btn btn-outline btn-sm" onclick="toggleCrop()" id="btnCrop">
+                            ✂️ Manual Crop
+                        </button>
+                        <button class="btn btn-outline btn-sm hidden" onclick="resetCrop()" id="btnResetCrop">
+                            ↩️ Reset Crop
+                        </button>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="analyzeAll()">
+                            🔍 Analyze All
+                        </button>
+                        <button class="btn btn-outline btn-sm" onclick="resetAll()">
+                            🗑️ Clear All
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Webcam mode -->
+            <div id="webcamMode" class="hidden">
+                <div class="video-container">
+                    <div class="webcam-placeholder" id="webcamPH">
+                        <span style="font-size:4rem;">📹</span>
+                        <button class="btn btn-success" onclick="startWebcam()">
+                            ▶️ Start Camera
+                        </button>
+                    </div>
+                    <img id="webcamFeed" src="" alt="Webcam" style="display:none;">
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-success" id="btnCamStart" onclick="startWebcam()">▶️ Start</button>
+                    <button class="btn btn-danger hidden" id="btnCamStop" onclick="stopWebcam()">⏹️ Stop</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Results -->
+        <div class="card">
+            <div class="card-header">
+                <div class="icon-circle icon-results">📊</div>
+                <span class="card-title">Analysis Results</span>
+                <span class="card-badge" id="fpsBadge" style="display:none;">0 FPS</span>
+            </div>
+
+            <!-- Image results -->
+            <div class="results-area" id="imageResults">
+                <div class="emotion-display">
+                    <span class="big-emoji" id="mainEmoji">🔍</span>
+                    <h2 class="emotion-name" id="mainEmotion">Ready</h2>
+                    <p class="confidence-text" id="mainConfidence">Upload images to analyze</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="mainBar" style="width:0%; background:var(--accent);"></div>
+                    </div>
+                    <div id="faceStatus"></div>
+                </div>
+                <div class="pred-list" id="predictionsList"></div>
+                <p style="text-align:center;color:var(--text-secondary);font-size:0.75rem;margin-top:8px;" id="modelUsed"></p>
+
+                <!-- Multi-result gallery -->
+                <h4 style="margin-top:15px;font-size:0.85rem;color:var(--text-secondary);">All Results</h4>
+                <div class="results-gallery" id="resultsGallery"></div>
+            </div>
+
+            <!-- Webcam results -->
+            <div class="results-area" id="webcamResults">
+                <div class="emotion-display">
+                    <span class="big-emoji" id="liveEmoji">📹</span>
+                    <h2 class="emotion-name" id="liveEmotion">Offline</h2>
+                    <p class="confidence-text" id="liveConfidence">Start camera</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="liveBar" style="width:0%; background:var(--accent);"></div>
+                    </div>
+                    <span class="status-badge status-missing" id="liveStatus">
+                        <span class="live-indicator"></span> Offline
+                    </span>
+                    <p style="font-size:0.75rem;color:var(--text-secondary);margin-top:4px;" id="liveFaceCount"></p>
+                </div>
+                <div class="pred-list" id="livePredictions"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ===== STATE =====
+    let currentMode = 'image';
+    let currentModel = 'model1';
+    let modelsInfo = {};
+    let webcamRunning = false;
+    let pollInterval = null;
+    let uploadedFiles = [];
+    let selectedResultIndex = 0;
+    let allResults = [];
+    let cropActive = false;
+    let cropCoords = { x: 50, y: 50, w: 200, h: 200 };
+    let isDragging = false;
+    let dragDir = null;
+
+    // ===== INIT =====
+    async function init() {
+        try {
+            const [mRes, dRes] = await Promise.all([
+                fetch('/get_models_info'),
+                fetch('/get_dataset_info')
+            ]);
+            modelsInfo = await mRes.json();
+            updateModelUI();
+        } catch (e) {
+            console.error('Init error:', e);
+        }
+    }
+
+    function updateModelUI() {
+        const m = modelsInfo[currentModel];
+        if (!m) return;
+        document.getElementById('mdlName').textContent = m.name;
+        document.getElementById('mdlDesc').textContent = m.description;
+        document.getElementById('mdlAcc').textContent = m.accuracy;
+        document.getElementById('modelUsed').textContent = `Model: ${m.name}`;
+
+        const toggle = document.getElementById('modelToggle');
+        if (currentModel === 'model2') {
+            toggle.classList.add('on');
+            document.getElementById('lbl1').classList.remove('active');
+            document.getElementById('lbl2').classList.add('active');
+        } else {
+            toggle.classList.remove('on');
+            document.getElementById('lbl1').classList.add('active');
+            document.getElementById('lbl2').classList.remove('active');
+        }
+    }
+
+    function toggleModel() {
+        if (Object.keys(modelsInfo).length < 2) return;
+        currentModel = currentModel === 'model1' ? 'model2' : 'model1';
+        updateModelUI();
+        if (webcamRunning) { stopWebcam(); setTimeout(startWebcam, 300); }
+    }
+
+    // ===== MODE SWITCHING =====
+    function switchMode(mode) {
+        currentMode = mode;
+        document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.mode === mode));
+
+        document.getElementById('imageMode').classList.toggle('hidden', mode !== 'image');
+        document.getElementById('webcamMode').classList.toggle('hidden', mode !== 'webcam');
+        document.getElementById('imageResults').classList.toggle('active', mode === 'image');
+        document.getElementById('webcamResults').classList.toggle('active', mode === 'webcam');
+        document.getElementById('inputTitle').textContent = mode === 'image' ? 'Upload Images' : 'Live Camera';
+        document.getElementById('inputBadge').textContent = mode === 'image' ? 'Multi-file' : 'Real-time';
+        document.getElementById('fpsBadge').style.display = mode === 'webcam' ? 'inline' : 'none';
+
+        if (mode !== 'webcam' && webcamRunning) stopWebcam();
+    }
+
+    // ===== FILE HANDLING =====
+    function handleDrop(e) {
+        e.preventDefault();
+        e.target.classList.remove('drag-over');
+        const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+        addFiles(files);
+    }
+
+    function handleFilesSelect(e) {
+        const files = Array.from(e.target.files).filter(f => f.type.startsWith('image/'));
+        addFiles(files);
+    }
+
+    function addFiles(files) {
+        files.forEach(f => {
+            if (f.size > 16 * 1024 * 1024) {
+                showToast(`${f.name} too large (>16MB)`);
+                return;
+            }
+            if (!uploadedFiles.find(uf => uf.name === f.name && uf.size === f.size)) {
+                uploadedFiles.push(f);
+            }
+        });
+        renderFileList();
+        if (uploadedFiles.length > 0) {
+            document.getElementById('uploadZone').classList.add('hidden');
+            document.getElementById('previewSection').classList.remove('hidden');
+            showPreview(0);
+        }
+    }
+
+    function renderFileList() {
+        const list = document.getElementById('fileList');
+        list.innerHTML = uploadedFiles.map((f, i) => `
+            <div class="file-item">
+                📄 ${f.name} (${(f.size/1024).toFixed(1)} KB)
+                <span class="remove-btn" onclick="removeFile(${i})">×</span>
+            </div>
+        `).join('');
+    }
+
+    function removeFile(i) {
+        uploadedFiles.splice(i, 1);
+        renderFileList();
+        if (uploadedFiles.length === 0) {
+            resetAll();
+        } else {
+            showPreview(Math.min(i, uploadedFiles.length - 1));
+        }
+    }
+
+    function showPreview(index) {
+        const reader = new FileReader();
+        reader.onload = e => {
+            document.getElementById('previewImg').src = e.target.result;
+        };
+        reader.readAsDataURL(uploadedFiles[index]);
+        selectedResultIndex = index;
+    }
+
+    // ===== CROP =====
+    function toggleCrop() {
+        cropActive = !cropActive;
+        const cropBox = document.getElementById('cropBox');
+        const btnCrop = document.getElementById('btnCrop');
+        const btnReset = document.getElementById('btnResetCrop');
+
+        if (cropActive) {
+            cropBox.classList.add('active');
+            btnCrop.innerHTML = '✅ Done Crop';
+            btnReset.classList.remove('hidden');
+            resetCropPosition();
+        } else {
+            cropBox.classList.remove('active');
+            btnCrop.innerHTML = '✂️ Manual Crop';
+            btnReset.classList.add('hidden');
+        }
+    }
+
+    function resetCrop() {
+        cropCoords = { x: 50, y: 50, w: 200, h: 200 };
+        resetCropPosition();
+    }
+
+    function resetCropPosition() {
+        const box = document.getElementById('cropBox');
+        box.style.left = cropCoords.x + 'px';
+        box.style.top = cropCoords.y + 'px';
+        box.style.width = cropCoords.w + 'px';
+        box.style.height = cropCoords.h + 'px';
+    }
+
+    function getCropData() {
+        const img = document.getElementById('previewImg');
+        const wrap = document.getElementById('imagePreviewWrap');
+        const box = document.getElementById('cropBox');
+
+        const imgRect = img.getBoundingClientRect();
+        const wrapRect = wrap.getBoundingClientRect();
+        const boxRect = box.getBoundingClientRect();
+
+        const scaleX = img.naturalWidth / imgRect.width;
+        const scaleY = img.naturalHeight / imgRect.height;
+
+        return {
+            x: (boxRect.left - imgRect.left) * scaleX,
+            y: (boxRect.top - imgRect.top) * scaleY,
+            w: boxRect.width * scaleX,
+            h: boxRect.height * scaleY
+        };
+    }
+
+    // Crop dragging
+    document.addEventListener('mousedown', e => {
+        if (!cropActive) return;
+        const handle = e.target.closest('.crop-handle');
+        const box = e.target.closest('#cropBox');
+        if (handle) {
+            isDragging = true;
+            dragDir = handle.dataset.dir;
+        } else if (box) {
+            isDragging = true;
+            dragDir = 'move';
+        }
+    });
+
+    document.addEventListener('mousemove', e => {
+        if (!isDragging || !cropActive) return;
+        const box = document.getElementById('cropBox');
+        const img = document.getElementById('previewImg');
+        const imgRect = img.getBoundingClientRect();
+        const wrap = document.getElementById('imagePreviewWrap');
+        const wrapRect = wrap.getBoundingClientRect();
+
+        const relX = e.clientX - imgRect.left;
+        const relY = e.clientY - imgRect.top;
+        const maxX = imgRect.width;
+        const maxY = imgRect.height;
+
+        let l = parseInt(box.style.left) || 0;
+        let t = parseInt(box.style.top) || 0;
+        let w = parseInt(box.style.width) || 200;
+        let h = parseInt(box.style.height) || 200;
+
+        switch (dragDir) {
+            case 'move':
+                l = Math.max(0, Math.min(maxX - w, relX - w/2));
+                t = Math.max(0, Math.min(maxY - h, relY - h/2));
+                break;
+            case 'se':
+                w = Math.max(50, relX - l);
+                h = Math.max(50, relY - t);
+                break;
+            case 'nw':
+                const nw_l = Math.max(0, relX);
+                const nw_t = Math.max(0, relY);
+                w = (l + w) - nw_l;
+                h = (t + h) - nw_t;
+                l = nw_l; t = nw_t;
+                break;
+            case 'ne':
+                t = Math.max(0, relY);
+                w = Math.max(50, relX - l);
+                h = (t + h) - t;
+                break;
+            case 'sw':
+                l = Math.max(0, relX);
+                w = (l + w) - l;
+                h = Math.max(50, relY - t);
+                break;
+        }
+
+        box.style.left = l + 'px';
+        box.style.top = t + 'px';
+        box.style.width = Math.max(50, w) + 'px';
+        box.style.height = Math.max(50, h) + 'px';
+    });
+
+    document.addEventListener('mouseup', () => {
+        if (isDragging) {
+            const box = document.getElementById('cropBox');
+            cropCoords = {
+                x: parseInt(box.style.left) || 50,
+                y: parseInt(box.style.top) || 50,
+                w: parseInt(box.style.width) || 200,
+                h: parseInt(box.style.height) || 200
+            };
+        }
+        isDragging = false;
+        dragDir = null;
+    });
+
+    // ===== ANALYZE =====
+    async function analyzeAll() {
+        if (uploadedFiles.length === 0) return;
+
+        const formData = new FormData();
+        uploadedFiles.forEach(f => formData.append('files', f));
+        formData.append('model', currentModel);
+
+        // Add crop if active
+        if (cropActive) {
+            const crop = getCropData();
+            formData.append('crop_x', crop.x);
+            formData.append('crop_y', crop.y);
+            formData.append('crop_w', crop.w);
+            formData.append('crop_h', crop.h);
+        }
+
+        try {
+            const res = await fetch('/predict', { method: 'POST', body: formData });
+            const data = await res.json();
+
+            if (!data.success) {
+                showToast('Analysis failed');
+                return;
+            }
+
+            allResults = data.results.filter(r => r.success);
+            renderResultsGallery();
+
+            if (allResults.length > 0) {
+                selectResult(0);
+                document.getElementById('imageResults').classList.add('active');
+            }
+        } catch (e) {
+            showToast('Error: ' + e.message);
+        }
+    }
+
+    function renderResultsGallery() {
+        const gallery = document.getElementById('resultsGallery');
+        gallery.innerHTML = allResults.map((r, i) => `
+            <div class="gallery-item ${i === selectedResultIndex ? 'selected' : ''}" onclick="selectResult(${i})">
+                <img src="data:image/png;base64,${r.image}" alt="${r.filename}">
+                <div class="gallery-info">
+                    <div class="emotion-label" style="color:${r.top_color}">${r.top_emoji} ${r.top_emotion}</div>
+                    <div class="conf-label">${(r.top_probability * 100).toFixed(1)}% • ${r.total_faces_detected} face(s)</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function selectResult(index) {
+        selectedResultIndex = index;
+        const r = allResults[index];
+        if (!r) return;
+
+        document.getElementById('mainEmoji').textContent = r.top_emoji;
+        document.getElementById('mainEmotion').textContent = r.top_emotion;
+        document.getElementById('mainEmotion').style.color = r.top_color;
+        document.getElementById('mainConfidence').textContent = `Confidence: ${(r.top_probability * 100).toFixed(1)}%`;
+        document.getElementById('mainBar').style.width = (r.top_probability * 100) + '%';
+        document.getElementById('mainBar').style.backgroundColor = r.top_color;
+        document.getElementById('modelUsed').textContent = `Model: ${r.model_used}`;
+
+        // Face status
+        const statusDiv = document.getElementById('faceStatus');
+        if (r.face_detected) {
+            statusDiv.innerHTML = `<span class="status-badge status-detected">✅ ${r.total_faces_detected} face(s) detected</span>`;
+        } else {
+            statusDiv.innerHTML = `<span class="status-badge status-missing">⚠️ No face detected</span>`;
+        }
+
+        // Predictions
+        const list = document.getElementById('predictionsList');
+        list.innerHTML = r.results.map(p => `
+            <div class="pred-item">
+                <span class="pred-emoji">${p.emoji}</span>
+                <span class="pred-name">${p.emotion}</span>
+                <div class="pred-bar-wrap">
+                    <div class="pred-bar-fill" style="width:${p.probability*100}%; background:${p.color};"></div>
+                </div>
+                <span class="pred-pct" style="color:${p.color}">${(p.probability*100).toFixed(1)}%</span>
+            </div>
+        `).join('');
+
+        // Update preview
+        document.getElementById('previewImg').src = `data:image/png;base64,${r.image}`;
+        document.getElementById('previewImg').alt = r.filename;
+
+        // Update gallery selection
+        document.querySelectorAll('.gallery-item').forEach((item, i) => {
+            item.classList.toggle('selected', i === index);
+        });
+
+        // Reset crop
+        if (cropActive) toggleCrop();
+    }
+
+    function resetAll() {
+        uploadedFiles = [];
+        allResults = [];
+        selectedResultIndex = 0;
+        document.getElementById('fileList').innerHTML = '';
+        document.getElementById('uploadZone').classList.remove('hidden');
+        document.getElementById('previewSection').classList.add('hidden');
+        document.getElementById('imageResults').classList.remove('active');
+        document.getElementById('fileInput').value = '';
+        document.getElementById('predictionsList').innerHTML = '';
+        document.getElementById('resultsGallery').innerHTML = '';
+        if (cropActive) toggleCrop();
+    }
+
+    // ===== WEBCAM =====
+    async function startWebcam() {
+        try {
+            const sRes = await fetch('/webcam_status');
+            const s = await sRes.json();
+            if (!s.available) { showToast('No webcam detected'); return; }
+
+            document.getElementById('webcamPH').style.display = 'none';
+            document.getElementById('webcamFeed').style.display = 'block';
+            document.getElementById('webcamFeed').src = `/video_feed?model=${currentModel}&t=${Date.now()}`;
+            document.getElementById('btnCamStart').classList.add('hidden');
+            document.getElementById('btnCamStop').classList.remove('hidden');
+            document.getElementById('fpsBadge').style.display = 'inline';
+            webcamRunning = true;
+
+            startPolling();
+        } catch (e) {
+            showToast('Webcam error: ' + e.message);
+        }
+    }
+
+    function stopWebcam() {
+        document.getElementById('webcamFeed').src = '';
+        document.getElementById('webcamFeed').style.display = 'none';
+        document.getElementById('webcamPH').style.display = 'flex';
+        document.getElementById('btnCamStart').classList.remove('hidden');
+        document.getElementById('btnCamStop').classList.add('hidden');
+        document.getElementById('fpsBadge').style.display = 'none';
+        webcamRunning = false;
+        stopPolling();
+
+        document.getElementById('liveEmoji').textContent = '📹';
+        document.getElementById('liveEmotion').textContent = 'Offline';
+        document.getElementById('liveConfidence').textContent = 'Start camera';
+        document.getElementById('liveBar').style.width = '0%';
+        document.getElementById('liveStatus').className = 'status-badge status-missing';
+        document.getElementById('liveStatus').innerHTML = '<span class="live-indicator"></span> Offline';
+        document.getElementById('liveFaceCount').textContent = '';
+        document.getElementById('livePredictions').innerHTML = '';
+    }
+
+    function startPolling() {
+        stopPolling();
+        pollInterval = setInterval(async () => {
+            if (!webcamRunning) return;
+            try {
+                const res = await fetch(`/emotion_data?model=${currentModel}`);
+                const data = await res.json();
+                updateLiveResults(data);
+            } catch (e) {}
+        }, 200);
+    }
+
+    function stopPolling() {
+        if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
+    }
+
+    function updateLiveResults(data) {
+        document.getElementById('fpsBadge').textContent = `${data.fps || 0} FPS`;
+        document.getElementById('liveFaceCount').textContent = `Faces detected: ${data.total_faces || 0}`;
+
+        if (data.faces && data.faces.length > 0) {
+            const face = data.faces[0];
+            document.getElementById('liveEmoji').textContent = face.emoji;
+            document.getElementById('liveEmotion').textContent = face.emotion;
+            document.getElementById('liveEmotion').style.color = face.color;
+            document.getElementById('liveConfidence').textContent = `Confidence: ${face.confidence}%`;
+            document.getElementById('liveBar').style.width = face.confidence + '%';
+            document.getElementById('liveBar').style.backgroundColor = face.color;
+            document.getElementById('liveStatus').className = 'status-badge status-detected';
+            document.getElementById('liveStatus').innerHTML = '<span class="live-indicator" style="background:var(--green);"></span> Live';
+
+            const list = document.getElementById('livePredictions');
+            if (face.all_predictions) {
+                list.innerHTML = face.all_predictions.map(p => `
+                    <div class="pred-item">
+                        <span class="pred-emoji">${p.emoji}</span>
+                        <span class="pred-name">${p.emotion}</span>
+                        <div class="pred-bar-wrap">
+                            <div class="pred-bar-fill" style="width:${p.probability*100}%; background:${p.color};"></div>
+                        </div>
+                        <span class="pred-pct">${(p.probability*100).toFixed(0)}%</span>
+                    </div>
+                `).join('');
+            }
+        }
+    }
+
+    // ===== UTILS =====
+    function showToast(msg) {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.textContent = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', e => {
+        if (e.key === '1') switchMode('image');
+        if (e.key === '2') switchMode('webcam');
+        if (e.ctrlKey && e.key === 'o') { e.preventDefault(); document.getElementById('fileInput').click(); }
+    });
+
+    window.addEventListener('beforeunload', () => { stopWebcam(); stopPolling(); });
+
+    init();
+</script>
+</body>
+</html>
